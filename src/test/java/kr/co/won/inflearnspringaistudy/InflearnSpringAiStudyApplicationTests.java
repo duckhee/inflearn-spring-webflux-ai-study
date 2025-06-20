@@ -8,6 +8,7 @@ class InflearnSpringAiStudyApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }
