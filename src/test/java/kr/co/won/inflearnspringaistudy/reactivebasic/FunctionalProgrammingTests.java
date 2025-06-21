@@ -1,7 +1,6 @@
-package kr.co.won.inflearnspringaistudy;
+package kr.co.won.inflearnspringaistudy.reactivebasic;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;

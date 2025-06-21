@@ -1,4 +1,4 @@
-package kr.co.won.inflearnspringaistudy;
+package kr.co.won.inflearnspringaistudy.reactivebasic;
 
 
 import org.junit.jupiter.api.Test;
