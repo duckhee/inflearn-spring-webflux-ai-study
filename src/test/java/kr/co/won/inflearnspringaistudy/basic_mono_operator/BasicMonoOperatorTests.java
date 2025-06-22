@@ -74,4 +74,5 @@ public class BasicMonoOperatorTests {
     public Mono<String> callWebClient(String request) {
         return Mono.just(request + " callWebClient Response!");
     }
+
 }
