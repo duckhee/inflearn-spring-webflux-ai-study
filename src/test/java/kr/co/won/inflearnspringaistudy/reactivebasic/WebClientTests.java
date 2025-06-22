@@ -31,6 +31,5 @@ public class WebClientTests {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
