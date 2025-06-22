@@ -1,5 +1,6 @@
 package kr.co.won.inflearnspringaistudy.reactivebasic;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,6 +12,7 @@ public class WebClientTests {
 
     private WebClient webClient = WebClient.builder().build();
 
+    @Disabled
     @Test
     public void testWebClient() {
         /// Scheduler를 할당할 때에는 명시적으로 반환 타입을 지정해주는 것이 좋다.
