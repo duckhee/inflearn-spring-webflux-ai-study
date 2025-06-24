@@ -2,6 +2,7 @@ package kr.co.won.inflearnspringaistudy.configuration;
 
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmType;
 import kr.co.won.inflearnspringaistudy.service.llmclient.LlmWebClientService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Configuration
 public class CommonConfiguration {
 

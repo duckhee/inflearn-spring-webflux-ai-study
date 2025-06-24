@@ -20,10 +20,13 @@ public class UserChatServiceImpl implements UserChatService {
 
     @Override
     public Mono<UserChatResponseDto> getOneShotChat(UserChatRequestDto requestDto) {
-        /// 사용자 요청 DTO에서 LLM Service에 전달할 DTO 객체로 변환
-        LlmChatRequestDto llmChatRequestDto = new LlmChatRequestDto(requestDto, "요청에 적절히 응답 해주세요.");
-        Mono<LlmChatResponseDto> chatCompletionMono = llmWebClientServiceMap.get(requestDto.getLlmModel().getType())
-                .getChatCompletion(llmChatRequestDto);
-        return chatCompletionMono.map(UserChatResponseDto::new);
+        // 호출 되면 바로 RequestDto를 만드는 것을 Mono의 흐름 안에서 생성하는 흐름으로 변경하기 위해서 defer를 이용한 객체 생성을 묶어준다.
+        return Mono.defer(() -> {
+            /// 사용자 요청 DTO에서 LLM Service에 전달할 DTO 객체로 변환
+            LlmChatRequestDto llmChatRequestDto = new LlmChatRequestDto(requestDto, "요청에 적절히 응답 해주세요.");
+            Mono<LlmChatResponseDto> chatCompletionMono = llmWebClientServiceMap.get(requestDto.getLlmModel().getType())
+                    .getChatCompletion(llmChatRequestDto);
+            return chatCompletionMono.map(UserChatResponseDto::new);
+        });
     }
 }

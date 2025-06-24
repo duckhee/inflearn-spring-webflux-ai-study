@@ -13,3 +13,5 @@ logging:
 llm:
   gpt:
     key: ${GPT_API_KEY:"gpt-api"}
+  gemini:
+    key: ${GEMINI_API_KEY:"gemini-api"}

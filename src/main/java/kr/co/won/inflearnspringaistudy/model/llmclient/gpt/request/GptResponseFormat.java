@@ -1,4 +1,4 @@
-package kr.co.won.inflearnspringaistudy.service.llmclient.gpt.request;
+package kr.co.won.inflearnspringaistudy.model.llmclient.gpt.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

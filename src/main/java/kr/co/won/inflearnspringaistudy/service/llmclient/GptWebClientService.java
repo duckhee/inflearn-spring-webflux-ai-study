@@ -5,8 +5,9 @@ import jakarta.annotation.PostConstruct;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmChatRequestDto;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmChatResponseDto;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmType;
-import kr.co.won.inflearnspringaistudy.service.llmclient.gpt.request.GptChatRequestDto;
-import kr.co.won.inflearnspringaistudy.service.llmclient.gpt.response.GptChatResponseDto;
+
+import kr.co.won.inflearnspringaistudy.model.llmclient.gpt.request.GptChatRequestDto;
+import kr.co.won.inflearnspringaistudy.model.llmclient.gpt.response.GptChatResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

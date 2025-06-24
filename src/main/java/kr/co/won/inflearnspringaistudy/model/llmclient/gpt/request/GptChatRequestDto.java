@@ -1,8 +1,8 @@
-package kr.co.won.inflearnspringaistudy.service.llmclient.gpt.request;
+package kr.co.won.inflearnspringaistudy.model.llmclient.gpt.request;
 
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmChatRequestDto;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmModel;
-import kr.co.won.inflearnspringaistudy.service.llmclient.gpt.GptMessageRole;
+import kr.co.won.inflearnspringaistudy.model.llmclient.gpt.GptMessageRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

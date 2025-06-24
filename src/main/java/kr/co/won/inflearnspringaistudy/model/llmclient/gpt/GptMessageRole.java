@@ -1,4 +1,4 @@
-package kr.co.won.inflearnspringaistudy.service.llmclient.gpt;
+package kr.co.won.inflearnspringaistudy.model.llmclient.gpt;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
