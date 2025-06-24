@@ -12,4 +12,4 @@ logging:
 # LLM SERVICE
 llm:
   gpt:
-    key: ${GPT_API_KEY}
+    key: ${GPT_API_KEY:"gpt-api"}
