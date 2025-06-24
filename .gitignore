@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### env file ###
+.env
+
+### java version file ###
+.java-version
