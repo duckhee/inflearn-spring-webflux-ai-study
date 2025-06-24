@@ -28,7 +28,7 @@ jobs:
 
       - name: Save commit SHA
         id: get_sha
-        run: echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+        run: echo "sha = ${{github.sha }}" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build Project
