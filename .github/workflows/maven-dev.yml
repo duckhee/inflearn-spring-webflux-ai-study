@@ -43,9 +43,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
-
-      - name: Maven Clean
-        run: mvn -B clean
+      # clean stage
+      #      - name: Maven Clean
+      #        run: mvn -B clean
 
       - name: Maven Package ( skip tests )
         run: mvn -B package -DskipTests --file pom.xml
@@ -65,7 +65,25 @@ jobs:
           cache: maven
 
       - name: Maven Test
-        run: mvn test
+        run: |
+          mkdir -p reports
+          mvn test | tee reports/test-output.txt
+
+      - name: Extract Test Summary and Write Summary
+        run: |
+          echo "## 🧪 Maven Test Summary" >> $GITHUB_STEP_SUMMARY
+          PASSED=$(grep -oE "Tests run: [0-9]+, Failures: 0, Errors: 0, Skipped: [0-9]+" reports/test-output.txt | head -n 1)
+          FAILED=$(grep -E "Failures: [1-9]|Errors: [1-9]" reports/test-output.txt | head -n 1)
+          
+          if [[ -n "$PASSED" ]]; then
+            echo "- ✅ 성공: $PASSED" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ -n "$FAILED" ]]; then
+            echo "- ❌ 실패: $FAILED" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "- ⏱️ 테스트 완료 시간: $(date -u +"%Y-%m-%d %H:%M:%S") UTC" >> $GITHUB_STEP_SUMMARY
 
 #  submit-graph:
 #    name: 📦 Submit Dependency Graph
