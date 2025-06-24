@@ -1,3 +1,5 @@
 spring:
   application:
   name: inflearn-spring-ai-study
+  config:
+    import: optional:
