@@ -18,4 +18,7 @@ public class GeminiCandidate implements Serializable {
 
     /// LLM에 대한 응답 값이 담겨 있는 변수
     private GeminiContent content;
+
+    /// 메세지 응답이 종료인지 확인하기 위한 변수
+    private String finishReason;
 }

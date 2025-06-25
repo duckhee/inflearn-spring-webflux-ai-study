@@ -8,6 +8,7 @@ import kr.co.won.inflearnspringaistudy.model.user.chat.UserChatResponseDto;
 import kr.co.won.inflearnspringaistudy.service.llmclient.LlmWebClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class UserChatServiceImpl implements UserChatService {
+
 
     private final Map<LlmType, LlmWebClientService> llmWebClientServiceMap;
 
@@ -28,5 +30,14 @@ public class UserChatServiceImpl implements UserChatService {
                     .getChatCompletion(llmChatRequestDto);
             return chatCompletionMono.map(UserChatResponseDto::new);
         });
+    }
+
+
+    @Override
+    public Flux<UserChatResponseDto> getOneShotChatStream(UserChatRequestDto requestDto) {
+        LlmChatRequestDto llmChatRequestDto = new LlmChatRequestDto(requestDto, "요청에 적절히 응답 해주세요.");
+        Flux<LlmChatResponseDto> chatCompletionFlux = llmWebClientServiceMap.get(requestDto.getLlmModel().getType())
+                .getChatCompletionStream(llmChatRequestDto);
+        return chatCompletionFlux.map(UserChatResponseDto::new);
     }
 }

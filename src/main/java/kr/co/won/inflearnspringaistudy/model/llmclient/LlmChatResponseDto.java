@@ -28,6 +28,13 @@ public class LlmChatResponseDto implements Serializable {
     }
 
     /**
+     * GPT에서 Stream 뎅터를 받기 위한 static 생성자
+     */
+    public static LlmChatResponseDto getLlmChatResponseDtoFromStream(GptChatResponseDto gptChatResponseDto) {
+        return new LlmChatResponseDto(gptChatResponseDto.getSingleChoice().getDelta().getContent());
+    }
+
+    /**
      * Gemini에 대한 응답을 LlmChatResponseDto 객체로 변경하는 생성자
      */
     public LlmChatResponseDto(GeminiChatResponseDto geminiChatResponseDto) {

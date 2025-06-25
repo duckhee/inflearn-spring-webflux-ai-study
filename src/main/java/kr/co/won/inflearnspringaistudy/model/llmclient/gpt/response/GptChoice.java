@@ -18,8 +18,11 @@ public class GptChoice implements Serializable {
     private static final long serialVersionUID = 5964743287572816409L;
 
     /// 응답이 어떤 이유로 끝났는지 알려주는 값이다.
-    private String finishReason;
+    private String finish_reason;
 
     ///  응답에 대한 값을 담고 있는 변수
     private GptResponseMessageDto message;
+
+    /// 응답에 대한 Stream 값을 담고 있는 변수
+    private GptResponseMessageDto delta;
 }

@@ -15,7 +15,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 /**
  * GPT에서 에러가 발생했을 때 보토 4xx 에러를 발생시킨다.
@@ -24,6 +27,8 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 public class GptWebClientService implements LlmWebClientService {
+
+    private static final String GPT_API_URI = "https://api.openai.com/v1/chat/completions";
 
     private final WebClient webClient;
     /// GPT에서 사용하기 위한 Key 값 -> API KEY 환경 변수 값을 읽어서 처리
@@ -39,7 +44,7 @@ public class GptWebClientService implements LlmWebClientService {
     public Mono<LlmChatResponseDto> getChatCompletion(LlmChatRequestDto requestDto) {
         GptChatRequestDto gptChatRequest = new GptChatRequestDto(requestDto);
         return webClient.post()
-                .uri("https://api.openai.com/v1/chat/completions")
+                .uri(GPT_API_URI)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + gptKey) /// header에 인증 관련 API 추가
                 .bodyValue(gptChatRequest)
                 .retrieve()
@@ -58,5 +63,25 @@ public class GptWebClientService implements LlmWebClientService {
     @Override
     public LlmType getLlmType() {
         return LlmType.GPT;
+    }
+
+    @Override
+    public Flux<LlmChatResponseDto> getChatCompletionStream(LlmChatRequestDto llmChatRequestDto) {
+        GptChatRequestDto gptChatRequestDto = new GptChatRequestDto(llmChatRequestDto);
+        // Stream 형태로 응답을 받기 위한 API 명세에 정의가 되어 있는 값 설정
+        gptChatRequestDto.setStream(true);
+        return webClient.post()
+                .uri(GPT_API_URI)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + gptKey)
+                .bodyValue(gptChatRequestDto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (clientResponse) -> {
+                    log.error("[Get Stream ErrorResponse] {}", clientResponse);
+                    return Mono.error(new RuntimeException("Get Stream Error"));
+                })
+                .bodyToFlux(GptChatResponseDto.class)
+                .takeWhile(response -> Optional.ofNullable(response.getSingleChoice().getFinish_reason()).isEmpty()) // 해당 조건이 만족하면 다운 스트림을 동작하고 해당 조건이 만족하지 않으면 다운 스트림이 실행이 되지 않는다.
+                .map(LlmChatResponseDto::getLlmChatResponseDtoFromStream);
+
     }
 }

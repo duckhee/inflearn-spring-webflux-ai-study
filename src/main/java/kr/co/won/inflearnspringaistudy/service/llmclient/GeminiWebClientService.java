@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -21,8 +22,13 @@ public class GeminiWebClientService implements LlmWebClientService {
 
     private final WebClient webClient;
 
+    private final static String GEMINI_BASE_ONE_SHOT_REQUEST_URI = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
+
+    private final static String GEMINI_BASE_STREAM_REQUEST_URI = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?key=";
+
     @Value("${llm.gemini.key}")
     private String key;
+
 
     @PostConstruct
     public void initShow() {
@@ -33,7 +39,7 @@ public class GeminiWebClientService implements LlmWebClientService {
     public Mono<LlmChatResponseDto> getChatCompletion(LlmChatRequestDto requestDto) {
         GeminiChatRequestDto geminiChatRequestDto = new GeminiChatRequestDto(requestDto);
         return webClient.post()
-                .uri("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + key)
+                .uri(GEMINI_BASE_ONE_SHOT_REQUEST_URI + key)
                 .bodyValue(geminiChatRequestDto)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (clientResponse -> {
@@ -47,5 +53,20 @@ public class GeminiWebClientService implements LlmWebClientService {
     @Override
     public LlmType getLlmType() {
         return LlmType.GEMINI;
+    }
+
+    @Override
+    public Flux<LlmChatResponseDto> getChatCompletionStream(LlmChatRequestDto llmChatRequestDto) {
+        GeminiChatRequestDto geminiChatRequestDto = new GeminiChatRequestDto(llmChatRequestDto);
+        return webClient.post()
+                .uri(GEMINI_BASE_STREAM_REQUEST_URI + key)
+                .bodyValue(geminiChatRequestDto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (clientResponse -> {
+                    log.error("[GPT ErrorResponse] {}", clientResponse);
+                    return Mono.error(new RuntimeException("GPT API 요청 실패 [" + clientResponse + "]"));
+                }))
+                .bodyToFlux(GeminiChatResponseDto.class)
+                .map(LlmChatResponseDto::new);
     }
 }

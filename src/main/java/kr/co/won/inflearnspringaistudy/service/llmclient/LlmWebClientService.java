@@ -3,6 +3,7 @@ package kr.co.won.inflearnspringaistudy.service.llmclient;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmChatRequestDto;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmChatResponseDto;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmType;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -33,4 +34,12 @@ public interface LlmWebClientService {
      * @return
      */
     LlmType getLlmType();
+
+    /**
+     * LLM에 대한 응답을 Stream 형태로 전달하는 함수
+     *
+     * @param llmChatRequestDto
+     * @return
+     */
+    Flux<LlmChatResponseDto> getChatCompletionStream(LlmChatRequestDto llmChatRequestDto);
 }
