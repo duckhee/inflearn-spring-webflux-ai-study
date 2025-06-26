@@ -1,8 +1,11 @@
 package kr.co.won.inflearnspringaistudy.service.llmclient;
 
+import kr.co.won.inflearnspringaistudy.exception.CommonError;
+import kr.co.won.inflearnspringaistudy.exception.ErrorTypeException;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmChatRequestDto;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmChatResponseDto;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmType;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -19,6 +22,25 @@ import reactor.core.publisher.Mono;
  * 인터페이스 타입으로 받아서 사용하기 때문에 느슨한 결합이 된다.
  */
 public interface LlmWebClientService {
+
+    /**
+     * Exception을 처리하기 위한 함수
+     *
+     * @param chatRequestDto
+     * @return
+     */
+    default Mono<LlmChatResponseDto> getChatChatCompletionWithCatchException(LlmChatRequestDto chatRequestDto) {
+        return getChatCompletion(chatRequestDto)
+                .onErrorResume(exception -> {
+                    if (exception instanceof ErrorTypeException errorTypeException) {
+                        CommonError commonError = new CommonError(errorTypeException.getErrorType().getCode(), errorTypeException.getMessage());
+                        return Mono.just(new LlmChatResponseDto(commonError));
+                    } else {
+                        CommonError commonError = new CommonError(500, exception.getMessage());
+                        return Mono.just(new LlmChatResponseDto(commonError));
+                    }
+                });
+    }
 
     /**
      * LLM에 요청을 보내서 응답을 가져오는 기능

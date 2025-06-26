@@ -1,5 +1,6 @@
 package kr.co.won.inflearnspringaistudy.model.user.chat;
 
+import kr.co.won.inflearnspringaistudy.exception.CommonError;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmChatResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,10 +20,14 @@ public class UserChatResponseDto implements Serializable {
 
     private String response;
 
+    private CommonError error;
+
+
     /**
      * LLM Service 응답을 UserChatResponseDto 형태로 생성자를 이용한 변환
      */
     public UserChatResponseDto(LlmChatResponseDto llmChatResponseDto) {
         this.response = llmChatResponseDto.getLlmResponse();
+        this.error = llmChatResponseDto.getError();
     }
 }

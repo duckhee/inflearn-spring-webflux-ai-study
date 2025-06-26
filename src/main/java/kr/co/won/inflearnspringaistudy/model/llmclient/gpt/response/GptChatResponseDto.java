@@ -1,5 +1,7 @@
 package kr.co.won.inflearnspringaistudy.model.llmclient.gpt.response;
 
+import kr.co.won.inflearnspringaistudy.exception.CustomErrorType;
+import kr.co.won.inflearnspringaistudy.exception.ErrorTypeException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +25,6 @@ public class GptChatResponseDto implements Serializable {
 
 
     public GptChoice getSingleChoice() {
-        return this.choices.stream().findFirst().orElseThrow();
+        return this.choices.stream().findFirst().orElseThrow(() -> new ErrorTypeException("[GPT Response] There is no choices.", CustomErrorType.GPT_RESPONSE_ERROR));
     }
 }

@@ -1,5 +1,7 @@
 package kr.co.won.inflearnspringaistudy.model.llmclient.gemini.response;
 
+import kr.co.won.inflearnspringaistudy.exception.CustomErrorType;
+import kr.co.won.inflearnspringaistudy.exception.ErrorTypeException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +30,6 @@ public class GeminiChatResponseDto implements Serializable {
                         candidate -> candidate.getContent().getParts()
                                 .stream().findFirst().map(part -> part.getText())
                 )
-                .orElseThrow();
+                .orElseThrow(() -> new ErrorTypeException("[GeminiResponse] There is no candidates. ", CustomErrorType.GEMINI_RESPONSE_ERROR));
     }
 }

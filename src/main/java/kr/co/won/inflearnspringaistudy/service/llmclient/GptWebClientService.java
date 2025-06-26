@@ -2,6 +2,8 @@ package kr.co.won.inflearnspringaistudy.service.llmclient;
 
 
 import jakarta.annotation.PostConstruct;
+import kr.co.won.inflearnspringaistudy.exception.CustomErrorType;
+import kr.co.won.inflearnspringaistudy.exception.ErrorTypeException;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmChatRequestDto;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmChatResponseDto;
 import kr.co.won.inflearnspringaistudy.model.llmclient.LlmType;
@@ -53,7 +55,7 @@ public class GptWebClientService implements LlmWebClientService {
                     return clientResponse.bodyToMono(String.class).flatMap(body -> {
                         log.error("[GPT ErrorResponse] {}", body);
                         /// 에러가 반환이 되면 반환 되는 시점에 Stream이 종료가 된다.
-                        return Mono.error(new RuntimeException("GPT API 요청 실패 [" + body + "]"));
+                        return Mono.error(new ErrorTypeException("GPT API 요청 실패 [" + body + "]", CustomErrorType.GPT_RESPONSE_ERROR));
                     });
                 }) /// 해당 method는 특정 상태가 생겼을 때 동작을 제어할 수 있다.
                 .bodyToMono(GptChatResponseDto.class) // 응답을 받아올 때 객체 형태 정의
@@ -77,7 +79,7 @@ public class GptWebClientService implements LlmWebClientService {
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (clientResponse) -> {
                     log.error("[Get Stream ErrorResponse] {}", clientResponse);
-                    return Mono.error(new RuntimeException("Get Stream Error"));
+                    return Mono.error(new ErrorTypeException("Get Stream Error", CustomErrorType.GPT_RESPONSE_ERROR));
                 })
                 .bodyToFlux(GptChatResponseDto.class)
                 .takeWhile(response -> Optional.ofNullable(response.getSingleChoice().getFinish_reason()).isEmpty()) // 해당 조건이 만족하면 다운 스트림을 동작하고 해당 조건이 만족하지 않으면 다운 스트림이 실행이 되지 않는다.
