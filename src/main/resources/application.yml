@@ -1,3 +1,19 @@
+server:
+  shutdown: graceful
 spring:
   application:
   name: inflearn-spring-ai-study
+  config:
+    import: optional:file:.env[.properties] # config env file using
+
+
+logging:
+  level:
+    root: INFO
+
+# LLM SERVICE
+llm:
+  gpt:
+    key: ${GPT_API_KEY:"gpt-api"}
+  gemini:
+    key: ${GEMINI_API_KEY:"gemini-api"}

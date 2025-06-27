@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### env file ###
+.env
+
+### java version file ###
+.java-version
+
+
+### node module remove ###
+node_modules/
+node_module/
+FrontEnd/node_modules/
+FrontEnd/node_modules

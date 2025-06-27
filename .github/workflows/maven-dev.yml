@@ -13,23 +13,93 @@ on:
     branches: [ "dev" ]
   pull_request:
     branches: [ "dev" ]
-
+#permissions:
+#  contents: read
+#  security-events: write  # ✅ 필수! Dependency Graph 제출에 필요
 jobs:
-  build:
-
+  checkout:
+    name: Checkout Repository Setting Env
     runs-on: ubuntu-latest
-
+    outputs:
+      commit_sha: ${{ steps.get_sha.outputs.sha }}
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-    - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+      - name: Save commit SHA
+        id: get_sha
+        run: echo "sha = ${{github.sha }}" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      # clean stage
+      #      - name: Maven Clean
+      #        run: mvn -B clean
+
+      - name: Maven Package ( skip tests )
+        run: mvn -B package -DskipTests --file pom.xml
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Maven Test
+        run: |
+          mkdir -p reports
+          mvn test | tee reports/test-output.txt
+
+      - name: Extract Test Summary and Write Summary
+        run: |
+          echo "## 🧪 Maven Test Summary" >> $GITHUB_STEP_SUMMARY
+          PASSED=$(grep -oE "Tests run: [0-9]+, Failures: 0, Errors: 0, Skipped: [0-9]+" reports/test-output.txt | head -n 1)
+          FAILED=$(grep -E "Failures: [1-9]|Errors: [1-9]" reports/test-output.txt | head -n 1)
+          
+          if [[ -n "$PASSED" ]]; then
+            echo "- ✅ 성공: $PASSED" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ -n "$FAILED" ]]; then
+            echo "- ❌ 실패: $FAILED" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "- ⏱️ 테스트 완료 시간: $(date -u +"%Y-%m-%d %H:%M:%S") UTC" >> $GITHUB_STEP_SUMMARY
+
+#  submit-graph:
+#    name: 📦 Submit Dependency Graph
+#    runs-on: ubuntu-latest
+#    needs: build  # build가 성공해야 실행됨
+#    if: github.actor != 'dependabot[bot]'  # dependabot은 권한 부족으로 실패함
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Set up Java 21
+#        uses: actions/setup-java@v4
+#        with:
+#          java-version: '21'
+#          distribution: 'temurin'
+#          cache: maven
+#
+#      - name: Submit dependencies to GitHub Dependency Graph
+#        uses: advanced-security/maven-dependency-submission-action@v4

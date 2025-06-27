@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
-@SpringBootTest
+//@SpringBootTest
 public class SubscriberPublisherAsyncTests {
 
 
