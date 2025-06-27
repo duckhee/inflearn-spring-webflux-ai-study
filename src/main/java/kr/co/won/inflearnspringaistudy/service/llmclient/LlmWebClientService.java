@@ -20,6 +20,8 @@ import reactor.core.publisher.Mono;
  * <p>
  * 느슨한 결합
  * 인터페이스 타입으로 받아서 사용하기 때문에 느슨한 결합이 된다.
+ * <p>
+ * 인터페이스에서는 Logging을 직접적으로 할 수 없기 때문에 Logging에 대한 함수를 만들어서 사용하는 방법과 추상 클래스로 만들어서 처리를 하는 방법이 있다.
  */
 public interface LlmWebClientService {
 
@@ -34,10 +36,10 @@ public interface LlmWebClientService {
                 .onErrorResume(exception -> {
                     if (exception instanceof ErrorTypeException errorTypeException) {
                         CommonError commonError = new CommonError(errorTypeException.getErrorType().getCode(), errorTypeException.getMessage());
-                        return Mono.just(new LlmChatResponseDto(commonError));
+                        return Mono.just(new LlmChatResponseDto(commonError, errorTypeException));
                     } else {
                         CommonError commonError = new CommonError(500, exception.getMessage());
-                        return Mono.just(new LlmChatResponseDto(commonError));
+                        return Mono.just(new LlmChatResponseDto(commonError, exception));
                     }
                 });
     }

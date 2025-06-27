@@ -2,6 +2,7 @@ package kr.co.won.inflearnspringaistudy.controller.user.chat;
 
 import kr.co.won.inflearnspringaistudy.model.user.chat.UserChatRequestDto;
 import kr.co.won.inflearnspringaistudy.model.user.chat.UserChatResponseDto;
+import kr.co.won.inflearnspringaistudy.service.user.chat.ChainOfThoughtService;
 import kr.co.won.inflearnspringaistudy.service.user.chat.UserChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,8 @@ import reactor.core.publisher.Mono;
 public class UserChatController {
 
     private final UserChatService userChatService;
+
+    private final ChainOfThoughtService cotService;
 
     // 유저가 요청 하나를 하면 단일 응답을 반환하는 역할
 
@@ -42,5 +45,10 @@ public class UserChatController {
     @PostMapping(path = "/oneshot/stream")
     public Flux<UserChatResponseDto> onShotChatStream(@RequestBody UserChatRequestDto requestDto) {
         return userChatService.getOneShotChatStream(requestDto);
+    }
+
+    @PostMapping(path = "/cot")
+    public Flux<UserChatResponseDto> chainOfThoughtStream(@RequestBody UserChatRequestDto requestDto) {
+        return cotService.getChainOfThoughtResponse(requestDto);
     }
 }
