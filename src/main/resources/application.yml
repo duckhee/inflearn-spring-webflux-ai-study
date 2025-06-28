@@ -1,5 +1,6 @@
 server:
   shutdown: graceful
+  port: 8080
 spring:
   application:
   name: inflearn-spring-ai-study
@@ -17,3 +18,12 @@ llm:
     key: ${GPT_API_KEY:"gpt-api"}
   gemini:
     key: ${GEMINI_API_KEY:"gemini-api"}
+
+springdoc:
+  swagger-ui:
+    path: /docs
+    use-root-path: false
+  api-docs:
+    enabled: true
+    path: /api-docs
+  model-and-view-allowed: false
